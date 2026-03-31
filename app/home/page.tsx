@@ -1,12 +1,12 @@
 'use server'
 
-import DashboardButton from '../components/dashboardButton';
+import LoginButton from '../components/loginButton';
 
 export default async function Home() {
     return (
         <>
             <h1>Home</h1>
-            <DashboardButton />
+            <LoginButton />
         </>
     )
 }
