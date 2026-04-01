@@ -4,9 +4,10 @@ import { cn } from "@/lib/utils"
 import { ThemeToggle } from "./theme-toggle"
 import { HamburgerButton } from "./hamburgerButton"
 import "m3-ripple/ripple.css";
-import { Avatar } from "@heroui/react";
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation";
+import { ArrowRightFromSquare, Gear, Persons } from "@gravity-ui/icons";
+import { Avatar, Dropdown, Label } from "@heroui/react";
 
 interface NavbarProps {
     menuOpen: boolean
@@ -15,8 +16,17 @@ interface NavbarProps {
 
 export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
     const { data: session } = useSession()
-    const userName = session?.user?.name
-    const userImage = session?.user?.image
+    const userName = session?.user?.name ?? "User"
+    const userEmail = session?.user?.email ?? ""
+    const userImage = session?.user?.image ?? ""
+    // Get initials for Avatar fallback
+    const initials = userName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+
     const router = useRouter()
 
     const menuItems = [
@@ -26,12 +36,32 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
     ]
 
     const handleMenuClick = (href: string) => {
-        router.push(`/dashboard/${href.toLowerCase()}`)
+        router.push(`/dashboard${href.toLowerCase()}`)
+    }
+
+    const handleDropdownAction = (key: string) => {
+        switch (key) {
+            case "dashboard":
+                router.push("/dashboard")
+                break
+            case "profile":
+                router.push("/dashboard/profile")
+                break
+            case "settings":
+                router.push("/dashboard/settings")
+                break
+            case "new-project":
+                router.push("/dashboard/team/new")
+                break
+            case "logout":
+                signOut({ callbackUrl: "/auth/signin" })
+                break
+        }
     }
 
     return (
         <>
-            <div className={cn(" z-20 bg-(--navbar-background)/30 backdrop-blur-xl sticky top-0 px-72 py-4 border-b")}>
+            <div className={cn("z-20 bg-(--navbar-background)/30 backdrop-blur-xl sticky top-0 px-72 py-4 border-b")}>
                 <div className="grid grid-cols-3 items-center">
                     <div>
                         <HamburgerButton isOpen={menuOpen} onToggle={(open: boolean) => setMenuOpen(open)} defaultOpen={menuOpen} />
@@ -41,10 +71,64 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
                     </div>
                     <div className="flex gap-x-2 justify-end">
                         <ThemeToggle />
-                        <Avatar>
-                            <Avatar.Image alt="John Doe" src={userImage as string} />
-                            <Avatar.Fallback>{userName as string}</Avatar.Fallback>
-                        </Avatar>
+                        <Dropdown onAction={(key) => handleDropdownAction(String(key))}>
+                            <Dropdown.Trigger className="rounded-full">
+                                <Avatar>
+                                    {userImage
+                                        ? <Avatar.Image alt={userName} src={userImage} />
+                                        : null
+                                    }
+                                    <Avatar.Fallback delayMs={userImage ? 600 : 0}>
+                                        {initials}
+                                    </Avatar.Fallback>
+                                </Avatar>
+                            </Dropdown.Trigger>
+                            <Dropdown.Popover>
+                                <div className="px-3 pt-3 pb-1">
+                                    <div className="flex items-center gap-2">
+                                        <Avatar size="sm">
+                                            {userImage
+                                                ? <Avatar.Image alt={userName} src={userImage} />
+                                                : null
+                                            }
+                                            <Avatar.Fallback delayMs={userImage ? 600 : 0}>
+                                                {initials}
+                                            </Avatar.Fallback>
+                                        </Avatar>
+                                        <div className="flex flex-col gap-0">
+                                            <p className="text-sm leading-5 font-medium">{userName}</p>
+                                            <p className="text-xs leading-none text-muted">{userEmail}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <Dropdown.Menu>
+                                    <Dropdown.Item id="dashboard" textValue="Dashboard">
+                                        <Label>Dashboard</Label>
+                                    </Dropdown.Item>
+                                    <Dropdown.Item id="profile" textValue="Profile">
+                                        <Label>Profile</Label>
+                                    </Dropdown.Item>
+                                    <Dropdown.Item id="settings" textValue="Settings">
+                                        <div className="flex w-full items-center justify-between gap-2">
+                                            <Label>Settings</Label>
+                                            <Gear className="size-3.5 text-muted" />
+                                        </div>
+                                    </Dropdown.Item>
+                                    <Dropdown.Item id="new-project" textValue="New project">
+                                        <div className="flex w-full items-center justify-between gap-2">
+                                            <Label>Create Team</Label>
+                                            <Persons className="size-3.5 text-muted" />
+                                        </div>
+                                    </Dropdown.Item>
+                                    <Dropdown.Item id="logout" textValue="Logout" variant="danger" onClick={() => signOut({ callbackUrl: "/" })}>
+                                        <div className="flex w-full items-center justify-between gap-2">
+                                            <Label>Log Out</Label>
+                                            <ArrowRightFromSquare className="size-3.5 text-danger" />
+                                        </div>
+                                    </Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown.Popover>
+                        </Dropdown>
                     </div>
                 </div>
             </div>
@@ -69,4 +153,4 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
             </div>
         </>
     )
-};
+}

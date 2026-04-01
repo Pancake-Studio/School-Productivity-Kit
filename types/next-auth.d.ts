@@ -1,7 +1,25 @@
-import "next-auth"
+import NextAuth from "next-auth"
 
 declare module "next-auth" {
+    interface Session {
+        user: {
+            id: string
+            email: string
+            image: string
+            isProfileComplete: boolean
+        }
+    }
     interface Profile {
-        email_verified?: boolean
+        email_verified?: boolean;
+        id: string;
     }
 }
+
+declare module "next-auth/jwt" {
+    interface JWT {
+        userId: string
+        picture: string
+        isProfileComplete: boolean
+    }
+}
+
