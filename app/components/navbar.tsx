@@ -8,6 +8,8 @@ import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation";
 import { ArrowRightFromSquare, Gear, Persons } from "@gravity-ui/icons";
 import { Avatar, Dropdown, Label } from "@heroui/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouse, faTable } from '@fortawesome/free-solid-svg-icons';
 
 interface NavbarProps {
     menuOpen: boolean
@@ -30,9 +32,8 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
     const router = useRouter()
 
     const menuItems = [
-        { icon: "🏠", label: "Menu", href: "/menu" },
-        { icon: "📊", label: "Time Table", href: "/timetable" },
-        { icon: "⚙️", label: "Settings", href: "/settings" },
+        { icon: (<FontAwesomeIcon icon={faHouse} />), label: "หน้าแรก", href: "/menu" },
+        { icon: (<FontAwesomeIcon icon={faTable} />), label: "จัดตารางสอน/เรียน", href: "/timetable" },
     ]
 
     const handleMenuClick = (href: string) => {
@@ -133,7 +134,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
                 </div>
             </div>
             <div className={cn(
-                "z-20 bg-(--navbar-background)/30 backdrop-blur-xl fixed top-16 left-0 h-screen border-r flex flex-col py-4 gap-2 transition-all duration-300 overflow-hidden",
+                "z-20 bg-(--navbar-background)/30 backdrop-blur-xl fixed top-18 left-0 h-screen border-r flex flex-col py-4 gap-2 transition-all duration-300 overflow-hidden",
                 menuOpen ? "w-52" : "w-14"
             )}>
                 {menuItems.map((item) => (
