@@ -72,7 +72,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
                     </div>
                     <div className="flex gap-x-2 justify-end">
                         <ThemeToggle />
-                        <Dropdown onAction={(key) => handleDropdownAction(String(key))}>
+                        <Dropdown>
                             <Dropdown.Trigger className="rounded-full">
                                 <Avatar>
                                     {userImage

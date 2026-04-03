@@ -43,26 +43,23 @@ export const authOptions: NextAuthOptions = {
         },
 
         async jwt({ token, account, profile, trigger }) {
-            // First sign-in — account & profile are only available once
             if (account && profile) {
                 const dbUser = await getUserByEmail(token.email!)
                 if (dbUser) {
                     token.userId = dbUser.id
                     token.isProfileComplete = dbUser.isProfileComplete
-                    token.picture = dbUser.picture
+                    token.picture = dbUser.picture ?? undefined
                 }
             }
 
-            // Called when update() is triggered from the client
             if (trigger === "update") {
                 const dbUser = await getUserByEmail(token.email as string)
                 if (dbUser) {
                     token.isProfileComplete = dbUser.isProfileComplete
-                    token.picture = dbUser.picture
+                    token.picture = dbUser.picture ?? undefined
                 }
             }
 
-            // Returning user with stale token — re-sync if still marked incomplete
             if (!token.isProfileComplete && token.email) {
                 const dbUser = await getUserByEmail(token.email as string)
                 if (dbUser) {
@@ -74,6 +71,9 @@ export const authOptions: NextAuthOptions = {
 
             return token
         },
+
+
+
 
         async session({ session, token }) {
             session.user.id = token.userId as string

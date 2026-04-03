@@ -7,6 +7,7 @@ declare module "next-auth" {
             email: string
             image: string
             isProfileComplete: boolean
+            name: string
         }
     }
     interface Profile {
@@ -18,8 +19,9 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
     interface JWT {
         userId: string
-        picture: string
+        picture: string | undefined
         isProfileComplete: boolean
+        name: string
     }
 }
 
