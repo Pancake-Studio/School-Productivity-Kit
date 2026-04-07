@@ -5,7 +5,18 @@ import { prisma } from "@/lib/prisma"
 
 export async function proxy(req: NextRequest) {
     const token = await getToken({ req })
-    const isProfileRoute = req.nextUrl.pathname === "/complete-profile"
+    const { pathname } = req.nextUrl
+
+    // Root redirect: authenticated → /dashboard, unauthenticated → /home
+    if (pathname === "/") {
+        if (token) {
+            return NextResponse.redirect(new URL("/dashboard", req.url))
+        } else {
+            return NextResponse.redirect(new URL("/home", req.url))
+        }
+    }
+
+    const isProfileRoute = pathname === "/complete-profile"
 
     if (token?.email && !token.isProfileComplete) {
         // Token says incomplete — verify against DB before redirecting
@@ -26,5 +37,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/((?!api|_next|favicon.ico|auth).*)"],
+    matcher: ["/", "/((?!api|_next|favicon.ico|auth).*)"],
 }

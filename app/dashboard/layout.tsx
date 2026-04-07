@@ -18,13 +18,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
     }, [session])
     return (
-        <div className="pl-14">
+        <div className="">
             <Navbar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-            <div className={cn(
-                "transition-all duration-300",
-                menuOpen ? "pl-40" : "pl-2"
-            )}>
-                {children}
+            <div className={cn("pl-0 sm:pl-14")}>
+                <div className={cn(
+                    "transition-all duration-300",
+                    menuOpen ? "pl-40" : "pl-2"
+                )}>
+                    {children}
+                </div>
             </div>
         </div>
     )

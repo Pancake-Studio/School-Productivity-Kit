@@ -62,7 +62,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
 
     return (
         <>
-            <div className={cn("z-20 bg-(--navbar-background)/30 backdrop-blur-xl sticky top-0 px-72 py-4 border-b")}>
+            <div className={cn("z-20 bg-(--navbar-background)/30 backdrop-blur-xl sticky top-0 px-4 sm:px-14 py-4 mx-2 sm:mx-40 mt-6 rounded-full border")}>
                 <div className="grid grid-cols-3 items-center">
                     <div>
                         <HamburgerButton isOpen={menuOpen} onToggle={(open: boolean) => setMenuOpen(open)} defaultOpen={menuOpen} />
@@ -103,24 +103,6 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
                                     </div>
                                 </div>
                                 <Dropdown.Menu>
-                                    <Dropdown.Item id="dashboard" textValue="Dashboard">
-                                        <Label>Dashboard</Label>
-                                    </Dropdown.Item>
-                                    <Dropdown.Item id="profile" textValue="Profile">
-                                        <Label>Profile</Label>
-                                    </Dropdown.Item>
-                                    <Dropdown.Item id="settings" textValue="Settings">
-                                        <div className="flex w-full items-center justify-between gap-2">
-                                            <Label>Settings</Label>
-                                            <Gear className="size-3.5 text-muted" />
-                                        </div>
-                                    </Dropdown.Item>
-                                    <Dropdown.Item id="new-project" textValue="New project">
-                                        <div className="flex w-full items-center justify-between gap-2">
-                                            <Label>Create Team</Label>
-                                            <Persons className="size-3.5 text-muted" />
-                                        </div>
-                                    </Dropdown.Item>
                                     <Dropdown.Item id="logout" textValue="Logout" variant="danger" onClick={() => signOut({ callbackUrl: "/" })}>
                                         <div className="flex w-full items-center justify-between gap-2">
                                             <Label>Log Out</Label>
@@ -133,24 +115,26 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
                     </div>
                 </div>
             </div>
-            <div className={cn(
-                "z-20 bg-(--navbar-background)/30 backdrop-blur-xl fixed top-18 left-0 h-screen border-r flex flex-col py-4 gap-2 transition-all duration-300 overflow-hidden",
-                menuOpen ? "w-52" : "w-14"
-            )}>
-                {menuItems.map((item) => (
-                    <button key={item.label} onClick={() => {
-                        setMenuOpen(false)
-                        handleMenuClick(item.href)
-                    }} className="flex items-center gap-3 px-4 py-2 hover:bg-black/10 dark:hover:bg-white/10 rounded-md w-full">
-                        <span className="text-xl shrink-0">{item.icon}</span>
-                        <span className={cn(
-                            "transition-all duration-300 whitespace-nowrap",
-                            menuOpen ? "opacity-100" : "opacity-0"
-                        )}>
-                            {item.label}
-                        </span>
-                    </button>
-                ))}
+            <div className={cn(menuOpen ? " opacity-100" : "opacity-0", "sm:opacity-100")}>
+                <div className={cn(
+                    "z-20 bg-(--navbar-background)/30 backdrop-blur-xl fixed top-0 left-0 h-screen border-r flex flex-col py-4 gap-2 transition-discrete duration-300  overflow-hidden",
+                    menuOpen ? "w-52" : "w-14"
+                )}>
+                    {menuItems.map((item) => (
+                        <button key={item.label} onClick={() => {
+                            setMenuOpen(false)
+                            handleMenuClick(item.href)
+                        }} className="flex items-center gap-3 px-4 py-2 hover:bg-black/10 dark:hover:bg-white/10 rounded-md w-full">
+                            <span className="text-xl shrink-0">{item.icon}</span>
+                            <span className={cn(
+                                "transition-all duration-300 whitespace-nowrap",
+                                menuOpen ? "opacity-100" : "opacity-0"
+                            )}>
+                                {item.label}
+                            </span>
+                        </button>
+                    ))}
+                </div>
             </div>
         </>
     )
