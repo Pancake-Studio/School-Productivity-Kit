@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRightFromSquare, Gear, Persons } from "@gravity-ui/icons";
 import { Avatar, Dropdown, Label } from "@heroui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouse, faTable } from '@fortawesome/free-solid-svg-icons';
+import { faHouse, faTable, faSchool } from '@fortawesome/free-solid-svg-icons';
 
 interface NavbarProps {
     menuOpen: boolean
@@ -33,6 +33,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
 
     const menuItems = [
         { icon: (<FontAwesomeIcon icon={faHouse} />), label: "หน้าแรก", href: "/menu" },
+        { icon: (<FontAwesomeIcon icon={faSchool} />), label: "โรงเรียนของฉัน", href: "/school" },
         { icon: (<FontAwesomeIcon icon={faTable} />), label: "จัดตารางสอน/เรียน", href: "/timetable" },
     ]
 
