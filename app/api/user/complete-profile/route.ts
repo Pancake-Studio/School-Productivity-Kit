@@ -1,32 +1,22 @@
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
-import { prisma } from "@/lib/prisma"
+import { auth } from "@/auth"
+import { prisma } from "@/lib/db"
 import { invalidateUserCache } from "@/lib/userCache"
 import { NextResponse } from "next/server"
 
 export async function POST(req: Request) {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
 
     if (!session?.user?.email) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { firstName, lastName } = await req.json()
+    const { displayName } = await req.json()
 
-    await prisma.user.upsert({
-        where: { email: session.user.email },
-        update: {
-            firstName,
-            lastName,
-            isProfileComplete: true,
-        },
-        create: {
-            email: session.user.email,
-            firstName,
-            lastName,
-            picture: session.user.image ?? null,
-            emailVerified: true,
-            isProfileComplete: true,
+    await prisma.user.update({
+        where: { id: session.user.id },
+        data: {
+            displayName,
+            avatarUrl: session.user.image ?? null,
         },
     })
 

@@ -6,22 +6,19 @@ declare module "next-auth" {
             id: string
             email: string
             image: string
-            isProfileComplete: boolean
             name: string
+            schoolId: string | null
         }
     }
     interface Profile {
         email_verified?: boolean;
-        id: string;
+        sub: string;
     }
 }
 
 declare module "next-auth/jwt" {
     interface JWT {
-        userId: string
-        picture: string | undefined
-        isProfileComplete: boolean
-        name: string
+        globalUserId: string
+        schoolId: string | null
     }
 }
-

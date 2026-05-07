@@ -5,7 +5,7 @@ import { ThemeToggle } from "./theme-toggle"
 import { HamburgerButton } from "./hamburgerButton"
 import "m3-ripple/ripple.css";
 import { useSession, signOut } from "next-auth/react"
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { ArrowRightFromSquare, Gear, Persons } from "@gravity-ui/icons";
 import { Avatar, Dropdown, Label } from "@heroui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -30,6 +30,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
         .slice(0, 2)
 
     const router = useRouter()
+    const pathname = usePathname()
 
     const menuItems = [
         { icon: (<FontAwesomeIcon icon={faHouse} />), label: "หน้าแรก", href: "/menu" },
@@ -41,8 +42,15 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
         router.push(`/dashboard${href.toLowerCase()}`)
     }
 
-    const handleDropdownAction = (key: string) => {
-        switch (key) {
+    // Check if a menu item is active
+    const isActive = (href: string) => {
+        const fullPath = `/dashboard${href.toLowerCase()}`
+        return pathname === fullPath || pathname.startsWith(fullPath + "/")
+    }
+
+    const handleDropdownAction = (key: any) => {
+        const sKey = String(key)
+        switch (sKey) {
             case "dashboard":
                 router.push("/dashboard")
                 break
@@ -69,7 +77,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
                         <HamburgerButton isOpen={menuOpen} onToggle={(open: boolean) => setMenuOpen(open)} defaultOpen={menuOpen} />
                     </div>
                     <div className="text-center">
-                        <h1 className="text-2xl font-bold">SPK</h1>
+                        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[var(--accent-1)] to-[var(--accent-2)]">SPK</h1>
                     </div>
                     <div className="flex gap-x-2 justify-end">
                         <ThemeToggle />
@@ -103,8 +111,14 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
                                         </div>
                                     </div>
                                 </div>
-                                <Dropdown.Menu>
-                                    <Dropdown.Item id="logout" textValue="Logout" variant="danger" onClick={() => signOut({ callbackUrl: "/" })}>
+                                <Dropdown.Menu onAction={handleDropdownAction}>
+                                    <Dropdown.Item id="profile" textValue="Profile">
+                                        <div className="flex w-full items-center justify-between gap-2">
+                                            <Label>แก้ไขโปรไฟล์</Label>
+                                            <Gear className="size-3.5" />
+                                        </div>
+                                    </Dropdown.Item>
+                                    <Dropdown.Item id="logout" textValue="Logout" variant="danger">
                                         <div className="flex w-full items-center justify-between gap-2">
                                             <Label>Log Out</Label>
                                             <ArrowRightFromSquare className="size-3.5 text-danger" />
@@ -118,23 +132,39 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
             </div>
             <div className={cn(menuOpen ? " opacity-100" : "opacity-0", "sm:opacity-100")}>
                 <div className={cn(
-                    "z-20 bg-(--navbar-background)/30 backdrop-blur-xl fixed top-0 left-0 h-screen border-r flex flex-col py-4 gap-2 transition-discrete duration-300  overflow-hidden",
+                    "z-20 bg-(--navbar-background)/30 backdrop-blur-xl fixed top-0 left-0 h-screen border-r flex flex-col py-4 gap-1 transition-all duration-300 ease-out overflow-hidden",
                     menuOpen ? "w-52" : "w-14"
                 )}>
-                    {menuItems.map((item) => (
-                        <button key={item.label} onClick={() => {
-                            setMenuOpen(false)
-                            handleMenuClick(item.href)
-                        }} className="flex items-center gap-3 px-4 py-2 hover:bg-black/10 dark:hover:bg-white/10 rounded-md w-full">
-                            <span className="text-xl shrink-0">{item.icon}</span>
-                            <span className={cn(
-                                "transition-all duration-300 whitespace-nowrap",
-                                menuOpen ? "opacity-100" : "opacity-0"
+                    {menuItems.map((item) => {
+                        const active = isActive(item.href)
+                        return (
+                            <button key={item.label} onClick={() => {
+                                setMenuOpen(false)
+                                handleMenuClick(item.href)
+                            }} className={cn(
+                                "relative flex items-center gap-3 px-4 py-2.5 rounded-md w-full transition-all duration-200",
+                                active
+                                    ? "bg-[var(--accent-1)]/10 text-[var(--accent-1)]"
+                                    : "hover:bg-black/10 dark:hover:bg-white/10"
                             )}>
-                                {item.label}
-                            </span>
-                        </button>
-                    ))}
+                                {/* Active indicator bar */}
+                                {active && (
+                                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-[var(--accent-1)]" />
+                                )}
+                                <span className={cn(
+                                    "text-xl shrink-0 transition-colors",
+                                    active && "text-[var(--accent-1)]"
+                                )}>{item.icon}</span>
+                                <span className={cn(
+                                    "transition-all duration-300 whitespace-nowrap font-medium",
+                                    menuOpen ? "opacity-100" : "opacity-0",
+                                    active && "text-[var(--accent-1)]"
+                                )}>
+                                    {item.label}
+                                </span>
+                            </button>
+                        )
+                    })}
                 </div>
             </div>
         </>

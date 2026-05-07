@@ -1,35 +1,152 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id                String   @id @default(cuid())
-  email             String   @unique
-  firstName         String?
-  lastName          String?
-  picture           String?
-  emailVerified     Boolean  @default(false)
-  isProfileComplete Boolean  @default(false)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+model GlobalUser {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  googleSub String   @unique
+  schoolId  String?  @db.Uuid
+  createdAt DateTime @default(now())
+  school    School?  @relation(fields: [schoolId], references: [id])
 
-  sessions Session[]
+  @@map("global_users")
 }
 
-model Session {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  expiresAt DateTime
+model School {
+  id                 String             @id @default(uuid()) @db.Uuid
+  name               String
+  slug               String             @unique
+  dbConnectionString String?
+  status             String             @default("ACTIVE")
+  createdAt          DateTime           @default(now())
+  globalUsers        GlobalUser[]
+  accessCodes        SchoolAccessCode[]
+  departments        Department[]
+  users              User[]
+  news               News[]
+  classrooms         Classroom[]
+
+  @@map("schools")
+}
+
+model SchoolAccessCode {
+  code           String    @id
+  usedBySchoolId String?   @db.Uuid
+  issuedAt       DateTime  @default(now())
+  usedAt         DateTime?
+  school         School?   @relation(fields: [usedBySchoolId], references: [id])
+
+  @@map("school_access_codes")
+}
+
+model Department {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  schoolId    String  @db.Uuid
+  school      School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  users       User[]
+
+  @@map("departments")
+}
+
+model User {
+  id                 String              @id @default(uuid()) @db.Uuid
+  displayName        String
+  avatarUrl          String?
+  role               Role                @default(STUDENT)
+  departmentId       String?             @db.Uuid
+  createdAt          DateTime            @default(now())
+  advisingClassrooms Classroom[]         @relation("AdvisorClassroom")
+  news               News[]
+  grantedPerms       Permission[]        @relation("GrantedPermissions")
+  permissions        Permission[]        @relation("UserPermissions")
+  studentProfile     StudentProfile?
+  googleAccounts     UserGoogleAccount[]
+  schoolId           String              @db.Uuid
+  school             School              @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  department         Department?         @relation(fields: [departmentId], references: [id])
+
+  @@map("users")
+}
+
+model UserGoogleAccount {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  googleSub String   @unique
+  email     String
+  linkedAt  DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_google_accounts")
+}
+
+model Permission {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @db.Uuid
+  permissionKey String
+  grantedById   String?  @db.Uuid
+  grantedAt     DateTime @default(now())
+  grantedBy     User?    @relation("GrantedPermissions", fields: [grantedById], references: [id])
+  user          User     @relation("UserPermissions", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionKey])
+  @@map("permissions")
+}
+
+model News {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  content     String
+  isPublished Boolean  @default(true)
+  authorId    String   @db.Uuid
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  schoolId    String   @db.Uuid
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  author      User     @relation(fields: [authorId], references: [id])
+
+  @@map("news")
+}
+
+model Classroom {
+  id        String           @id @default(uuid()) @db.Uuid
+  name      String
+  advisorId String?          @db.Uuid
+  advisor   User?            @relation("AdvisorClassroom", fields: [advisorId], references: [id])
+  schoolId  String           @db.Uuid
+  school    School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  students  StudentProfile[]
+
+  @@map("classrooms")
+}
+
+model StudentProfile {
+  id            String     @id @default(uuid()) @db.Uuid
+  userId        String     @unique @db.Uuid
+  studentCode   String?
+  studentNumber Int?
+  studyTrack    String?
+  classroomId   String?    @db.Uuid
+  parentName    String?
+  parentContact String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  classroom     Classroom? @relation(fields: [classroomId], references: [id])
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("student_profiles")
+}
+
+enum Role {
+  ADMIN
+  DEPARTMENT_HEAD
+  REGISTRAR
+  TEACHER
+  STUDENT
 }

@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  transpilePackages: ["@uploadcare/blocks"],
   images: {
     remotePatterns: [
       {
@@ -11,7 +12,6 @@ const nextConfig: NextConfig = {
     ],
   },
   allowedDevOrigins: ['192.168.1.55', '192.168.1.115'],
-  turbopack: {},
 };
 
 export default nextConfig;

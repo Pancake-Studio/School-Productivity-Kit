@@ -5,30 +5,101 @@
 
   /* ===== LIGHT MODE (default) ===== */
   :root {
-    --background: hsl(0, 0%, 96.1%);
-    --foreground: hsl(240 10% 3.9%);
+    --background: hsl(0, 0%, 98%);
+    --foreground: hsl(240, 10%, 15%);
     --navbar-background: hsl(0, 0%, 100%);
-    --navbar-foreground: hsl(240, 10%, 3.9%);
+    --navbar-foreground: hsl(240, 10%, 15%);
+
+    /* Clean muted accent palette */
+    --accent-1: hsl(220, 70%, 50%); /* Blue */
+    --accent-2: hsl(200, 70%, 45%); /* Sky */
+    --accent-3: hsl(160, 60%, 45%); /* Emerald */
+    --accent-4: hsl(340, 60%, 50%); /* Rose */
+    --accent-5: hsl(30, 80%, 55%);  /* Orange */
+
+    /* Clean Card styling */
+    --card-bg: hsl(0, 0%, 100%);
+    --card-border: rgba(0, 0, 0, 0.08);
+    --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    /* Surface */
+    --surface-elevated: hsl(0, 0%, 100%);
+    --surface-subtle: hsl(240, 5%, 96%);
+    --text-muted: hsl(240, 5%, 45%);
+    --text-subtle: hsl(240, 5%, 65%);
+
+    /* Soft Gradients (kept minimal) */
+    --gradient-1: linear-gradient(135deg, hsl(220, 70%, 50%), hsl(200, 70%, 45%));
+    --gradient-2: linear-gradient(135deg, hsl(160, 60%, 45%), hsl(200, 70%, 45%));
+    --gradient-3: linear-gradient(135deg, hsl(340, 60%, 50%), hsl(20, 70%, 55%));
+    --gradient-4: linear-gradient(135deg, hsl(30, 80%, 55%), hsl(40, 80%, 60%));
   }
 
   /* ===== DARK MODE ===== */
   .dark {
-    --background: hsl(240 10% 7.9%);
-    --foreground: hsl(0 0% 98%);
-    --navbar-background: hsl(240, 10%, 3.9%);
+    --background: hsl(240, 10%, 8%);
+    --foreground: hsl(0, 0%, 98%);
+    --navbar-background: hsl(240, 10%, 6%);
     --navbar-foreground: hsl(0, 0%, 98%);
+
+    /* Muted accent palette for dark */
+    --accent-1: hsl(220, 70%, 60%);
+    --accent-2: hsl(200, 70%, 55%);
+    --accent-3: hsl(160, 60%, 55%);
+    --accent-4: hsl(340, 60%, 60%);
+    --accent-5: hsl(30, 80%, 65%);
+
+    /* Clean Card styling */
+    --card-bg: hsl(240, 10%, 12%);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+
+    /* Surface */
+    --surface-elevated: hsl(240, 10%, 15%);
+    --surface-subtle: hsl(240, 10%, 10%);
+    --text-muted: hsl(240, 5%, 65%);
+    --text-subtle: hsl(240, 5%, 45%);
+
+    /* Gradients */
+    --gradient-1: linear-gradient(135deg, hsl(220, 70%, 60%), hsl(200, 70%, 55%));
+    --gradient-2: linear-gradient(135deg, hsl(160, 60%, 55%), hsl(200, 70%, 55%));
+    --gradient-3: linear-gradient(135deg, hsl(340, 60%, 60%), hsl(20, 70%, 65%));
+    --gradient-4: linear-gradient(135deg, hsl(30, 80%, 65%), hsl(40, 80%, 70%));
   }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+}
+
+/* ===== Base Styles ===== */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--accent-1);
+  color: white;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), var(--font-prompt), system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.011em;
+}
+
+/* Minimal gradient text utility */
+.gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
